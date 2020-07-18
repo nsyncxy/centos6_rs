@@ -1,5 +1,6 @@
 # centos7_rs
-更新内核
+#--------centos7系统专用，其他的系统用不了-------------------------
+#更新内核
 wget --no-check-certificate -O rskernel.sh https://raw.githubusercontent.com/nsyncxy/centos7_rs/master/rskernel.sh && bash rskernel.sh
 更新内核会重启系统
 安装加速
