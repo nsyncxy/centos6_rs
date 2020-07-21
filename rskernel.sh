@@ -92,33 +92,28 @@ if [ -s /etc/selinux/config ] && grep "SELINUX=enforcing" /etc/selinux/config; t
     setenforce 0
 fi
 if check_release centos; then
-    if check_virt kvm; then
-        start
-        if check_centos_main_version 7; then
-            echo -e "[${green}INFO${plain}] System OS is CentOS7. Processing..."
+    start
+    if check_centos_main_version 7; then
+        echo -e "[${green}INFO${plain}] System OS is CentOS7. Processing..."
+        echo -e "-------------------------------------------"
+        rpm -ivh https://raw.githubusercontent.com/nsyncxy/centos7_rs/master/kernel-3.10.0-229.1.2.el7.x86_64.rpm --force
+        if [ $? -eq 0 ]; then
+            grub2-set-default `awk -F\' '$1=="menuentry " {print i++ " : " $2}' /etc/grub2.cfg | grep '(3.10.0-229.1.2.el7.x86_64) 7 (Core)' | awk '{print $1}'`
             echo -e "-------------------------------------------"
-            rpm -ivh https://raw.githubusercontent.com/nsyncxy/centos7_rs/master/kernel-3.10.0-229.1.2.el7.x86_64.rpm --force
-            if [ $? -eq 0 ]; then
-                grub2-set-default `awk -F\' '$1=="menuentry " {print i++ " : " $2}' /etc/grub2.cfg | grep '(3.10.0-229.1.2.el7.x86_64) 7 (Core)' | awk '{print $1}'`
-                echo -e "-------------------------------------------"
-                echo -e "[${green}INFO${plain}] Success! Your server will reboot in 3s..."
-                sleep 1
-                echo -e "[${green}INFO${plain}] Success! Your server will reboot in 2s..."
-                sleep 1
-                echo -e "[${green}INFO${plain}] Success! Your server will reboot in 1s..."
-                sleep 1
-                echo -e "[${green}INFO${plain}] Reboot..."
-                reboot
-            else
-                echo -e "[${red}ERROR${plain}] Change kernel failed!"
-                exit 1
-            fi
-        elif check_centos_main_version 8; then
-            echo -e "[${yellow}WARNNING${plain}] This script only support CentOS6/7!"
+            echo -e "[${green}INFO${plain}] Success! Your server will reboot in 3s..."
+            sleep 1
+            echo -e "[${green}INFO${plain}] Success! Your server will reboot in 2s..."
+            sleep 1
+            echo -e "[${green}INFO${plain}] Success! Your server will reboot in 1s..."
+            sleep 1
+            echo -e "[${green}INFO${plain}] Reboot..."
+            reboot
+        else
+            echo -e "[${red}ERROR${plain}] Change kernel failed!"
             exit 1
         fi
-    else
-        echo -e "[${yellow}WARNNING${plain}] This script only support KVM!"
+    elif check_centos_main_version 8; then
+        echo -e "[${yellow}WARNNING${plain}] This script only support CentOS6/7!"
         exit 1
     fi
 else
